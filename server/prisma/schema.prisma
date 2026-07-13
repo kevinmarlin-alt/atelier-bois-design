@@ -4,10 +4,146 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum PublishStatus {
+  draft
+  published
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(100)
+
+  projects Project[]
+  quotes   Quote[]
+
+  @@map("category")
+}
+
+model Project {
+  id          Int           @id @default(autoincrement())
+  title       String        @db.VarChar(100)
+  description String?
+  slug        String        @unique @db.VarChar(150)
+  status      PublishStatus @default(draft)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  categoryId Int?      @map("category_id")
+  category   Category? @relation(fields: [categoryId], references: [id], onUpdate: Restrict, onDelete: Restrict)
+
+  medias       Media[]
+  testimonials Testimonial[]
+
+  @@map("project")
+}
+
+model Media {
+  id          Int     @id @default(autoincrement())
+  title       String  @db.VarChar(100)
+  description String? @db.VarChar(255)
+  alt         String  @db.VarChar(255)
+  filename    String  @unique @db.VarChar(100)
+  height      Int
+  width       Int
+  slug        String  @unique @db.VarChar(100)
+
+  projectId Int     @map("project_id")
+  project   Project @relation(fields: [projectId], references: [id], onUpdate: Restrict, onDelete: Cascade)
+
+  @@map("media")
+}
+
+model Testimonial {
+  id      Int           @id @default(autoincrement())
+  title   String        @db.VarChar(100)
+  content String
+  author  String        @db.VarChar(100)
+  status  PublishStatus @default(draft)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  projectId Int     @map("project_id")
+  project   Project @relation(fields: [projectId], references: [id], onUpdate: Restrict, onDelete: Cascade)
+
+  @@map("testimonial")
+}
+
+model AppUser {
+  id        Int    @id @default(autoincrement())
+  firstname String @db.VarChar(100)
+  lastname  String @db.VarChar(100)
+  email     String @unique @db.VarChar(255)
+  password  String @db.VarChar(255)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("app_user")
+}
+
+model Article {
+  id      Int           @id @default(autoincrement())
+  title   String        @db.VarChar(100)
+  content String
+  slug    String        @unique @db.VarChar(150)
+  status  PublishStatus @default(draft)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("article")
+}
+
+model Prospect {
+  id        Int     @id @default(autoincrement())
+  firstname String  @db.VarChar(100)
+  lastname  String  @db.VarChar(100)
+  email     String  @unique @db.VarChar(255)
+  phone     String? @db.VarChar(50)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  messages Message[]
+  quotes   Quote[]
+
+  @@map("prospect")
+}
+
+model Quote {
+  id          Int    @id @default(autoincrement())
+  description String
+  budget      Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  prospectId Int      @map("prospect_id")
+  prospect   Prospect @relation(fields: [prospectId], references: [id], onUpdate: Restrict, onDelete: Restrict)
+
+  categoryId Int      @map("category_id")
+  category   Category @relation(fields: [categoryId], references: [id], onUpdate: Restrict, onDelete: Restrict)
+
+  @@map("quote")
+}
+
+model Message {
+  id      Int    @id @default(autoincrement())
+  subject String @db.VarChar(255)
+  message String
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  prospectId Int      @map("prospect_id")
+  prospect   Prospect @relation(fields: [prospectId], references: [id], onUpdate: Restrict, onDelete: Restrict)
+
+  @@map("message")
 }
