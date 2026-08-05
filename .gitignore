@@ -1,5 +1,6 @@
 # Global
 node_modules
+DS_Store
 
 # ESlint
 eslint.config.js
