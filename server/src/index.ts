@@ -8,7 +8,8 @@ import express from 'express';
 import type { Request, Response, NextFunction } from 'express'
 
 import { router as apiRouter } from './routes/api.routes.js'
-//import { errorHandler } from "./errors/errorHandler.js";
+import { errorHandler } from "./errors/errorHandler.js";
+import { AppError } from "./errors/AppError.js";
 
 dotenvx.config()
 
@@ -33,7 +34,11 @@ app.use('/api', apiRouter);
 
 // 404 Error
 app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(req)
+  next(new AppError(
+    `Impossible de trouver ${req.originalUrl}, ressayez avec une nouvelle URL.`,
+    404, 
+    "NOT_FOUND_ERROR"
+  ))
 })
 
 // logErrors
@@ -44,6 +49,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 
 //app.use(errorHandler);
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
