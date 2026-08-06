@@ -7,8 +7,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "start": "NODE_ENV=production node src/index.ts",
     "dev": "NODE_ENV=development nodemon --exec tsx src/index.ts",
-    "start": "NODE_ENV=production node tsx src/index.ts",
     "db:seed": "prisma db seed",
     "db:fixtures": "npx tsx prisma/fixtures.ts",
     "prisma:generate": "prisma generate",
