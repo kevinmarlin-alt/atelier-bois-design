@@ -1,4 +1,4 @@
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 
 async function main() {
     const kitchen = await prisma.project.create({
@@ -37,6 +37,41 @@ async function main() {
           author: "John Doe",
           projectId: dressing.id,
           status: "published"
+        }
+      ]
+    })
+
+    const medias = await prisma.media.createMany({
+      data: [
+        {
+            title: "dressing-001",
+            description: "Dressing sur mesure avec lumière intégré",
+            alt: "Photo de dressing sur mesure avec lumière intégré",
+            filename: "dressing0001",
+            height: 100,
+            width: 150,
+            slug: "dressing-dupond-before",
+            projectId: dressing.id
+        },
+        {
+            title: "dressing-002",
+            description: "Dressing sur mesure avec rideau en façade",
+            alt: "Photo de dressing sur mesure avec rideau en façade beige",
+            filename: "dressing0002",
+            height: 100,
+            width: 150,
+            slug: "dressing-dupond-after",
+            projectId: dressing.id
+        },
+        {
+            title: "kitchen-001",
+            description: "Cuisine sur mesure avec façade en chêne",
+            alt: "Photo de cuisine sur mesure avec façade en chêne claire",
+            filename: "kitchen0001",
+            height: 100,
+            width: 150,
+            slug: "kitchen-dupond-chene",
+            projectId: kitchen.id
         }
       ]
     })
